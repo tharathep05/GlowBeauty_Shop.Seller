@@ -16,17 +16,7 @@ builder.Services.AddSession(options =>
 
 // แก้ไข Error 19 ด้วย EnableRetryOnFailure (ระบบลองเชื่อมต่อใหม่เมื่อ Connection หลุด)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection")
-        ?? "Server=(localdb)\\mssqllocaldb;Database=GlowBeautyDbV3;Trusted_Connection=True;MultipleActiveResultSets=true",
-        sqlServerOptionsAction: sqlOptions =>
-        {
-            sqlOptions.EnableRetryOnFailure(
-                maxRetryCount: 5,
-                maxRetryDelay: TimeSpan.FromSeconds(10),
-                errorNumbersToAdd: null);
-        }
-    ));
+    options.UseSqlite("Data Source=app.db"));
 
 var app = builder.Build();
 
