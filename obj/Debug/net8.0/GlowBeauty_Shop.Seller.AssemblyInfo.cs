@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GlowBeauty_Shop.Seller")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3bd094633a9cb6d51da35aaedcb6d52b911060b9")]
 [assembly: System.Reflection.AssemblyProductAttribute("GlowBeauty_Shop.Seller")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GlowBeauty_Shop.Seller")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
