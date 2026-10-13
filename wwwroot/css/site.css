@@ -1,0 +1,228 @@
+/* นำเข้า Cormorant Garamond (หัวข้อหรู), Prompt (ข้อความภาษาไทย), Plus Jakarta Sans (ตัวเลขอ่านง่าย คมชัด) */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Plus+Jakarta+Sans:wght@500;600;700&family=Prompt:wght@300;400;500;600&display=swap');
+
+:root {
+    --lux-bg: #FAF9F6;
+    --lux-card-bg: #FFFFFF;
+    --lux-dark: #1A1A1A;
+    --lux-gold: #C5A059;
+    --lux-gold-hover: #A88340;
+    --lux-border: #E8E3D9;
+    --lux-text-muted: #8C8C8C;
+    --font-serif: 'Cormorant Garamond', Georgia, serif;
+    --font-sans: 'Prompt', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-num: 'Plus Jakarta Sans', -apple-system, sans-serif; /* ฟอนต์ตัวเลขอ่านง่าย คมชัด */
+}
+
+body {
+    background-color: var(--lux-bg);
+    color: var(--lux-dark);
+    font-family: var(--font-sans);
+    font-weight: 300;
+    letter-spacing: 0.3px;
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, .lux-heading {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    color: var(--lux-dark);
+}
+
+/* คลาสสำหรับตัวเลข ยอดเงิน รหัสสินค้า/ออเดอร์ ให้มองง่าย สบายตา */
+.lux-num {
+    font-family: var(--font-num) !important;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.5px;
+}
+
+/* Header & Navbar สีขาวนวลสะอาดตา */
+.navbar-lux {
+    background-color: #FFFFFF !important;
+    border-bottom: 1px solid var(--lux-border);
+    padding: 1.2rem 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.navbar-brand-lux {
+    font-family: var(--font-serif);
+    font-size: 1.6rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--lux-dark) !important;
+    font-weight: 700;
+}
+
+    .navbar-brand-lux span {
+        color: var(--lux-gold);
+        font-weight: 300;
+    }
+
+.nav-link-lux {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--lux-dark) !important;
+    transition: all 0.3s ease;
+    padding: 0.5rem 1rem !important;
+    font-weight: 400;
+}
+
+    .nav-link-lux:hover {
+        color: var(--lux-gold) !important;
+    }
+
+/* การ์ดสรุปผล KPI ตัวเลขชัดเจน */
+.card-lux {
+    background: var(--lux-card-bg);
+    border: 1px solid var(--lux-border);
+    border-radius: 4px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.kpi-card {
+    padding: 1.8rem;
+    border-top: 3px solid var(--lux-gold);
+}
+
+.kpi-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--lux-text-muted);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.kpi-value {
+    font-family: var(--font-num);
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--lux-dark);
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ปุ่มกดสไตล์แบรนด์เนม */
+.btn-lux-dark {
+    background-color: var(--lux-dark);
+    color: #FFFFFF;
+    border: 1px solid var(--lux-dark);
+    border-radius: 0;
+    padding: 0.75rem 2rem;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+}
+
+    .btn-lux-dark:hover {
+        background-color: var(--lux-gold);
+        border-color: var(--lux-gold);
+        color: #FFFFFF;
+    }
+
+.btn-lux-outline {
+    background-color: transparent;
+    color: var(--lux-dark);
+    border: 1px solid var(--lux-dark);
+    border-radius: 0;
+    padding: 0.65rem 1.6rem;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+}
+
+    .btn-lux-outline:hover {
+        background-color: var(--lux-dark);
+        color: #FFFFFF;
+    }
+
+.btn-lux-gold {
+    background-color: var(--lux-gold);
+    color: #FFFFFF;
+    border: 1px solid var(--lux-gold);
+    border-radius: 0;
+    padding: 0.75rem 2rem;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+}
+
+    .btn-lux-gold:hover {
+        background-color: var(--lux-gold-hover);
+        border-color: var(--lux-gold-hover);
+        color: #FFFFFF;
+    }
+
+/* ช่องกรอก PIN / Password */
+.pin-input {
+    letter-spacing: 12px;
+    font-size: 1.6rem;
+    text-align: center;
+    font-family: var(--font-num);
+    font-weight: 600;
+    padding: 0.8rem;
+    border: 1px solid var(--lux-border);
+    border-radius: 2px;
+    background-color: #FAF9F6;
+}
+
+    .pin-input:focus {
+        border-color: var(--lux-gold);
+        box-shadow: 0 0 0 0.2rem rgba(197, 160, 89, 0.15);
+        background-color: #FFFFFF;
+    }
+
+/* ตารางข้อมูล */
+.table-lux th {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--lux-text-muted);
+    background-color: #FAF9F6;
+    border-bottom: 1px solid var(--lux-border);
+    padding: 1.1rem 1rem;
+    font-weight: 500;
+}
+
+.table-lux td {
+    padding: 1.2rem 1rem;
+    border-bottom: 1px solid var(--lux-border);
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+
+.badge-lux {
+    padding: 0.45em 0.9em;
+    font-size: 0.7rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border-radius: 0;
+    font-weight: 500;
+}
+
+.badge-lux-pending {
+    background-color: #FAF3E0;
+    color: #8A6D3B;
+    border: 1px solid #E8D8B5;
+}
+
+.badge-lux-success {
+    background-color: #EBF3ED;
+    color: #2D5A39;
+    border: 1px solid #C4DFC9;
+}
+
+.badge-lux-danger {
+    background-color: #FDF0F0;
+    color: #9E3B3B;
+    border: 1px solid #F3C7C7;
+}

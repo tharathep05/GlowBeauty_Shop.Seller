@@ -1,0 +1,211 @@
+﻿@using GlowBeauty_Shop.Seller.Models
+@model IEnumerable<GlowBeauty_Shop.Seller.Models.Order>
+
+@{
+    ViewData["Title"] = "จัดการคำสั่งซื้อและจัดส่ง";
+    var selectedStatus = ViewBag.SelectedStatus as OrderStatus?;
+}
+
+<div class="card card-luxury p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h3 class="fw-bold text-dark mb-1">คำสั่งซื้อและการจัดส่ง</h3>
+            <p class="text-muted small mb-0">รายการคำสั่งซื้อจากลูกค้าทั้งหมดในระบบ</p>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- แถบปุ่มกรองสถานะ -->
+    <div class="d-flex flex-wrap gap-2 mb-4">
+        <a asp-action="Index" class="btn btn-sm @(!selectedStatus.HasValue ? "btn-gold" : "btn-outline-gold") rounded-pill px-3">ทั้งหมด</a>
+        <a asp-action="Index" asp-route-status="@OrderStatus.Paid" class="btn btn-sm @(selectedStatus == OrderStatus.Paid ? "btn-gold" : "btn-outline-gold") rounded-pill px-3">ชำระเงินแล้ว</a>
+        <a asp-action="Index" asp-route-status="@OrderStatus.Processing" class="btn btn-sm @(selectedStatus == OrderStatus.Processing ? "btn-gold" : "btn-outline-gold") rounded-pill px-3">กำลังจัดเตรียม</a>
+        <a asp-action="Index" asp-route-status="@OrderStatus.Shipped" class="btn btn-sm @(selectedStatus == OrderStatus.Shipped ? "btn-gold" : "btn-outline-gold") rounded-pill px-3">อยู่ระหว่างจัดส่ง</a>
+        <a asp-action="Index" asp-route-status="@OrderStatus.Delivered" class="btn btn-sm @(selectedStatus == OrderStatus.Delivered ? "btn-gold" : "btn-outline-gold") rounded-pill px-3">จัดส่งสำเร็จ</a>
+    </div>
+
+    <!-- ตารางออเดอร์ -->
+    <div class="table-responsive">
+        <table class="table table-luxury align-middle">
+            <thead>
+                <tr>
+                    <th>เลขที่ออเดอร์</th>
+                    <th>วันที่สั่งซื้อ</th>
+                    <th>ชื่อลูกค้า</th>
+                    <th>ยอดรวม</th>
+                    <th>สถานะ</th>
+                    <th>เลขพัสดุ</th>
+                    <th class="text-end">การจัดการ</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">ไม่พบข้อมูลคำสั่งซื้อ</td>
+                    </tr>
+                }
+                @foreach (var order in Model)
+                {
+                    <tr>
+                        <td class="fw-bold text-gold">#@order.OrderNumber</td>
+                        <td class="small">@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>
+                            <span class="fw-medium">@order.CustomerName</span><br />
+                            <small class="text-muted"><i class="bi bi-telephone"></i> @order.CustomerPhone</small>
+                        </td>
+                        <td class="fw-bold text-dark">฿@order.TotalAmount.ToString("N2")</td>
+                        <td>
+                            @switch (order.Status)
+                            {
+                                case OrderStatus.Paid:
+                                    <span class="badge bg-warning text-dark">ชำระเงินแล้ว</span>
+                                    break;
+                                case OrderStatus.Processing:
+                                    <span class="badge bg-info text-dark">กำลังจัดเตรียม</span>
+                                    break;
+                                case OrderStatus.Shipped:
+                                    <span class="badge bg-primary">อยู่ระหว่างจัดส่ง</span>
+                                    break;
+                                case OrderStatus.Delivered:
+                                    <span class="badge bg-success">จัดส่งสำเร็จ</span>
+                                    break;
+                                case OrderStatus.Cancelled:
+                                    <span class="badge bg-danger">ยกเลิก</span>
+                                    break;
+                                default:
+                                    <span class="badge bg-secondary">รอดำเนินการ</span>
+                                    break;
+                            }
+                        </td>
+                        <td class="small">
+                            @(string.IsNullOrEmpty(order.TrackingNumber) ? "-" : order.TrackingNumber)
+                        </td>
+                        <td class="text-end">
+                            <!-- ปุ่มกดดูรายละเอียดจริง -->
+                            <button type="button" class="btn btn-sm btn-gold rounded-pill px-3 me-1" data-bs-toggle="modal" data-bs-target="#detailModal-@order.Id">
+                                <i class="bi bi-eye"></i> ดูออเดอร์
+                            </button>
+                            
+                            <!-- ปุ่มเปลี่ยนสถานะ -->
+                            <button type="button" class="btn btn-sm btn-outline-gold rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#editModal-@order.Id">
+                                <i class="bi bi-pencil-square"></i> สถานะ
+                            </button>
+
+                            <!-- ================= 1. MODAL รายละเอียดสินค้าออเดอร์ ================= -->
+                            <div class="modal fade text-start" id="detailModal-@order.Id" tabindex="-1">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-gold-light border-bottom">
+                                            <h5 class="modal-title fw-bold text-dark">
+                                                <i class="bi bi-receipt text-gold me-2"></i> รายละเอียดออเดอร์ #@order.OrderNumber
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body p-4">
+                                            <!-- ข้อมูลลูกค้า -->
+                                            <div class="row mb-4 p-3 rounded-3 bg-light border">
+                                                <div class="col-md-6 mb-2 mb-md-0">
+                                                    <h6 class="fw-bold text-gold"><i class="bi bi-person"></i> ข้อมูลผู้ซื้อ</h6>
+                                                    <div><strong>ชื่อ:</strong> @order.CustomerName</div>
+                                                    <div><strong>เบอร์โทร:</strong> @order.CustomerPhone</div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <h6 class="fw-bold text-gold"><i class="bi bi-geo-alt"></i> ที่อยู่จัดส่ง</h6>
+                                                    <div class="small text-muted">@order.ShippingAddress</div>
+                                                </div>
+                                            </div>
+
+                                            <!-- รายการสินค้าที่สั่งซื้อ -->
+                                            <h6 class="fw-bold mb-3"><i class="bi bi-bag-check"></i> รายการสินค้าที่สั่งซื้อ</h6>
+                                            <div class="table-responsive mb-3">
+                                                <table class="table align-middle">
+                                                    <thead class="table-light small">
+                                                        <tr>
+                                                            <th>สินค้า</th>
+                                                            <th class="text-center">ราคา/ชิ้น</th>
+                                                            <th class="text-center">จำนวน</th>
+                                                            <th class="text-end">ราคารวม</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var item in order.Items)
+                                                        {
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="d-flex align-items-center">
+                                                                        <img src="@(item.Product?.ImageUrl ?? "/images/default-product.jpg")" 
+                                                                             class="rounded me-3" style="width: 50px; height: 50px; object-fit: cover;" 
+                                                                             onerror="this.src='https://via.placeholder.com/50';" />
+                                                                        <div>
+                                                                            <div class="fw-bold text-dark">@(item.Product?.Name ?? "สินค้า")</div>
+                                                                            <small class="text-muted">หมวดหมู่: @(item.Product?.Category ?? "-")</small>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                                <td class="text-center">฿@item.UnitPrice.ToString("N2")</td>
+                                                                <td class="text-center fw-bold">x @item.Quantity</td>
+                                                                <td class="text-end fw-bold text-gold">฿@((item.UnitPrice * item.Quantity).ToString("N2"))</td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                                <span class="text-muted">วันที่สั่งซื้อ: @order.OrderDate.ToString("dd MMMM yyyy HH:mm")</span>
+                                                <h5 class="fw-bold text-dark mb-0">ราคารวมสุทธิ: <span class="text-danger">฿@order.TotalAmount.ToString("N2")</span></h5>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer bg-light">
+                                            <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">ปิดหน้าต่าง</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ================= 2. MODAL อัปเดตสถานะ & เลขพัสดุ ================= -->
+                            <div class="modal fade text-start" id="editModal-@order.Id" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <form asp-action="UpdateStatus" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="orderId" value="@order.Id" />
+                                            <div class="modal-header bg-gold-light">
+                                                <h5 class="modal-title fw-bold text-dark">อัปเดตสถานะ #@order.OrderNumber</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body p-4">
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold">สถานะการจัดส่ง</label>
+                                                    <select name="status" class="form-select" asp-items="Html.GetEnumSelectList<OrderStatus>()" asp-for="@order.Status">
+                                                    </select>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold">เลขพัสดุ (Tracking Number)</label>
+                                                    <input type="text" name="trackingNumber" class="form-control" value="@order.TrackingNumber" placeholder="เช่น TH123456789" />
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer bg-light">
+                                                <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">ยกเลิก</button>
+                                                <button type="submit" class="btn btn-gold rounded-pill px-4">บันทึกข้อมูล</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

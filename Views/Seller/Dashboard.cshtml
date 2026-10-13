@@ -1,0 +1,110 @@
+﻿@model GlowBeauty_Shop.Seller.Models.SellerDashboardViewModel
+@{
+    ViewData["Title"] = "Executive Dashboard";
+}
+
+<div class="my-3">
+    <!-- Header Zone -->
+    <div class="d-flex justify-content-between align-items-end mb-5 border-bottom pb-4" style="border-color: var(--lux-border) !important;">
+        <div>
+            <span class="text-uppercase" style="letter-spacing: 3px; color: var(--lux-gold); font-size: 0.8rem; font-weight: 500;">ภาพรวมระบบ</span>
+            <h1 class="display-6 mb-0">Executive Dashboard</h1>
+        </div>
+        <div>
+            <a asp-action="Products" class="btn btn-lux-outline">จัดการรายการสินค้า</a>
+        </div>
+    </div>
+
+    <!-- Stat Cards Grid -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="card-lux kpi-card">
+                <div class="kpi-label">ยอดขายรวมทั้งหมด</div>
+                <div class="kpi-value">฿@Model.TotalSales.ToString("N2")</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card-lux kpi-card">
+                <div class="kpi-label">คำสั่งซื้อทั้งหมด</div>
+                <div class="kpi-value">@Model.TotalOrders <span style="font-size: 0.9rem; font-family: var(--font-sans); font-weight: 400; color: var(--lux-text-muted);">รายการ</span></div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card-lux kpi-card">
+                <div class="kpi-label">รอดำเนินการ</div>
+                <div class="kpi-value" style="color: var(--lux-gold-hover);">@Model.PendingOrders <span style="font-size: 0.9rem; font-family: var(--font-sans); font-weight: 400; color: var(--lux-text-muted);">รายการ</span></div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card-lux kpi-card" style="border-top-color: #9E3B3B;">
+                <div class="kpi-label">สินค้าสต็อกต่ำ (<= 10)</div>
+                <div class="kpi-value" style="color: #9E3B3B;">@Model.LowStockProductsCount <span style="font-size: 0.9rem; font-family: var(--font-sans); font-weight: 400; color: var(--lux-text-muted);">รายการ</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Orders Table -->
+    <div class="card-lux">
+        <div class="p-4 border-bottom d-flex justify-content-between align-items-center" style="border-color: var(--lux-border) !important;">
+            <h3 class="h5 mb-0" style="letter-spacing: 1px;">รายการคำสั่งซื้อล่าสุด</h3>
+            <span style="font-size: 0.8rem; color: var(--lux-text-muted);">แสดง 10 ออเดอร์ล่าสุด</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-lux table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>รหัสคำสั่งซื้อ</th>
+                        <th>ชื่อลูกค้า</th>
+                        <th>วันที่และเวลา</th>
+                        <th>ราคารวม</th>
+                        <th>สถานะ</th>
+                        <th>จัดการสถานะ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model.RecentOrders)
+                    {
+                        <tr>
+                            <td><strong class="lux-num" style="font-size: 1rem;">#@order.Id</strong></td>
+                            <td>@order.CustomerName</td>
+                            <td class="lux-num" style="color: var(--lux-text-muted); font-size: 0.85rem;">@order.OrderDate.ToString("dd MMM yyyy HH:mm")</td>
+                            <td><strong class="lux-num" style="font-size: 1.05rem;">฿@order.TotalAmount.ToString("N2")</strong></td>
+                            <td>
+                                @switch (order.Status)
+                                {
+                                    case OrderStatus.Pending:
+                                        <span class="badge-lux badge-lux-pending">รอดำเนินการ</span>
+                                        break;
+                                    case OrderStatus.Processing:
+                                        <span class="badge-lux badge-lux-pending">กำลังเตรียมจัดส่ง</span>
+                                        break;
+                                    case OrderStatus.Shipped:
+                                        <span class="badge-lux badge-lux-success">จัดส่งแล้ว</span>
+                                        break;
+                                    case OrderStatus.Delivered:
+                                        <span class="badge-lux badge-lux-success">จัดส่งสำเร็จ</span>
+                                        break;
+                                    case OrderStatus.Cancelled:
+                                        <span class="badge-lux badge-lux-danger">ยกเลิกรายการ</span>
+                                        break;
+                                }
+                            </td>
+                            <td>
+                                <form asp-action="UpdateOrderStatus" method="post" class="d-inline">
+                                    <input type="hidden" name="orderId" value="@order.Id" />
+                                    <select name="status" onchange="this.form.submit()" class="form-select form-select-sm border-0 bg-light" style="font-size: 0.85rem; width: auto; display: inline-block;">
+                                        <option value="Pending" selected="@(order.Status == OrderStatus.Pending)">รอดำเนินการ</option>
+                                        <option value="Processing" selected="@(order.Status == OrderStatus.Processing)">กำลังเตรียมจัดส่ง</option>
+                                        <option value="Shipped" selected="@(order.Status == OrderStatus.Shipped)">จัดส่งแล้ว</option>
+                                        <option value="Delivered" selected="@(order.Status == OrderStatus.Delivered)">จัดส่งสำเร็จ</option>
+                                        <option value="Cancelled" selected="@(order.Status == OrderStatus.Cancelled)">ยกเลิกรายการ</option>
+                                    </select>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

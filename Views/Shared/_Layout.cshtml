@@ -1,0 +1,143 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - GlowBeauty Seller Portal</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: #FAF8F5;
+            color: #2C2622;
+        }
+
+        .navbar-gold {
+            background-color: #FFFFFF;
+            border-bottom: 2px solid #EADBC8;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.08);
+        }
+
+        .brand-text {
+            color: #2C2622;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+
+        .brand-badge {
+            background: linear-gradient(135deg, #DFA851 0%, #C5A059 100%);
+            color: #FFF;
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #D4AF37 0%, #C5A059 100%);
+            color: #FFFFFF !important;
+            border: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(197, 160, 89, 0.3);
+        }
+
+        .btn-gold:hover {
+            background: linear-gradient(135deg, #C5A059 0%, #B8860B 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(197, 160, 89, 0.4);
+        }
+
+        .btn-outline-gold {
+            border: 1.5px solid #C5A059;
+            color: #C5A059 !important;
+            background: transparent;
+            font-weight: 500;
+        }
+
+        .btn-outline-gold:hover, .btn-outline-gold.active {
+            background-color: #C5A059;
+            color: #FFFFFF !important;
+        }
+
+        .card-luxury {
+            background: #FFFFFF;
+            border: 1px solid #F0E6D8;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03);
+        }
+
+        .table-luxury thead {
+            background-color: #FDFBF7;
+            color: #7A6855;
+            border-bottom: 2px solid #EADBC8;
+        }
+
+        .text-gold { color: #C5A059 !important; }
+        .bg-gold-light { background-color: #FDFBF7; }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-gold py-3">
+            <div class="container">
+                <a class="navbar-brand brand-text fs-4" asp-controller="Dashboard" asp-action="Index">
+                    GLOW BEAUTY <span class="brand-badge">SELLER</span>
+                </a>
+
+                @if (Context.Session.GetString("IsLoggedIn") == "true")
+                {
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav me-auto ms-4">
+                            <!-- เมนูที่ 1: แดชบอร์ดสรุปยอดขาย -->
+                            <li class="nav-item me-2">
+                                <a class="nav-link text-dark fw-medium px-3" asp-controller="Dashboard" asp-action="Index">
+                                    <i class="bi bi-speedometer2 text-gold me-1"></i> แดชบอร์ดสรุปยอดขาย
+                                </a>
+                            </li>
+                            <!-- เมนูที่ 2: คำสั่งซื้อและจัดส่ง -->
+                            <li class="nav-item me-2">
+                                <a class="nav-link text-dark fw-medium px-3" asp-controller="Order" asp-action="Index">
+                                    <i class="bi bi-box-seam text-gold me-1"></i> คำสั่งซื้อและจัดส่ง
+                                </a>
+                            </li>
+                            <!-- เมนูที่ 3: จัดการสินค้า -->
+                            <li class="nav-item">
+                                <a class="nav-link text-dark fw-medium px-3" asp-controller="Product" asp-action="Index">
+                                    <i class="bi bi-grid text-gold me-1"></i> จัดการสินค้า
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="d-flex align-items-center">
+                            <span class="text-muted small me-3">
+                                <i class="bi bi-person-circle text-gold me-1"></i> @Context.Session.GetString("SellerName")
+                            </span>
+                            <a class="btn btn-outline-danger btn-sm rounded-pill px-3" asp-controller="Account" asp-action="Logout">
+                                ออกจากระบบ
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </nav>
+    </header>
+
+    <div class="container my-4 flex-grow-1">
+        @RenderBody()
+    </div>
+
+    <footer class="bg-white border-top py-3 text-center text-muted small mt-auto">
+        &copy; 2026 GlowBeauty Shop - Seller Portal (Luxury Edition)
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

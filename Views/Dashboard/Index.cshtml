@@ -1,0 +1,238 @@
+﻿@model GlowBeauty_Shop.Seller.Models.DashboardViewModel
+
+@{
+    ViewData["Title"] = "แดชบอร์ดสรุปยอดขาย";
+}
+
+<div class="mb-4 d-flex justify-content-between align-items-center">
+    <div>
+        <h3 class="fw-bold text-dark mb-1">
+            <i class="bi bi-speedometer2 text-gold me-2"></i> แดชบอร์ดสรุปยอดขาย
+        </h3>
+        <p class="text-muted small mb-0">ภาพรวมผลการดำเนินงานและสถิติการขายของ GlowBeauty Shop</p>
+    </div>
+    <a asp-controller="Order" asp-action="Index" class="btn btn-gold rounded-pill px-4 shadow-sm">
+        <i class="bi bi-box-seam me-1"></i> จัดการคำสั่งซื้อ
+    </a>
+</div>
+
+<!-- ================= 1. SUMMARY CARDS (การ์ดสรุปยอด) ================= -->
+<div class="row g-3 mb-4">
+    <!-- ยอดขายรวม -->
+    <div class="col-md-3">
+        <div class="card card-luxury p-3 text-white" style="background: linear-gradient(135deg, #D4AF37 0%, #C5A059 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="small text-white-50 fw-bold">ยอดขายรวมทั้งหมด</div>
+                    <h3 class="fw-bold my-1">฿@Model.TotalRevenue.ToString("N2")</h3>
+                    <div class="small text-white-50"><i class="bi bi-graph-up-arrow me-1"></i> คำนวณจากออเดอร์สำเร็จ</div>
+                </div>
+                <div class="fs-1 text-white-50"><i class="bi bi-wallet2"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- จำนวนออเดอร์ -->
+    <div class="col-md-3">
+        <div class="card card-luxury p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="small text-muted fw-bold">คำสั่งซื้อทั้งหมด</div>
+                    <h3 class="fw-bold text-dark my-1">@Model.TotalOrders รายการ</h3>
+                    <div class="small text-muted"><i class="bi bi-bag-check text-gold me-1"></i> รวมทุกสถานะ</div>
+                </div>
+                <div class="fs-1 text-gold"><i class="bi bi-cart-check"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- รอจัดส่ง -->
+    <div class="col-md-3">
+        <div class="card card-luxury p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="small text-muted fw-bold">รอเตรียม / จัดส่ง</div>
+                    <h3 class="fw-bold text-warning my-1">@Model.PendingDeliveries ออเดอร์</h3>
+                    <div class="small text-muted"><i class="bi bi-clock-history text-warning me-1"></i> ต้องดำเนินการ</div>
+                </div>
+                <div class="fs-1 text-warning"><i class="bi bi-truck"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- จำนวนสินค้า -->
+    <div class="col-md-3">
+        <div class="card card-luxury p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="small text-muted fw-bold">รายการสินค้าในร้าน</div>
+                    <h3 class="fw-bold text-dark my-1">@Model.TotalProducts รายการ</h3>
+                    <div class="small text-muted"><i class="bi bi-grid-fill text-gold me-1"></i> พร้อมวางขาย</div>
+                </div>
+                <div class="fs-1 text-gold"><i class="bi bi-box-seam"></i></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- ================= 2. CHART (กราฟสรุปยอดขาย) ================= -->
+    <div class="col-lg-7">
+        <div class="card card-luxury p-4 h-100">
+            <h5 class="fw-bold text-dark mb-3">
+                <i class="bi bi-bar-chart-line text-gold me-2"></i> แนวโน้มยอดขายย้อนหลัง
+            </h5>
+            <div class="flex-grow-1 d-flex align-items-center">
+                <canvas id="salesChart" style="max-height: 280px; width: 100%;"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 3. TOP 5 BEST SELLERS (สินค้าขายดี 5 อันดับ) ================= -->
+    <div class="col-lg-5">
+        <div class="card card-luxury p-4 h-100">
+            <h5 class="fw-bold text-dark mb-3">
+                <i class="bi bi-trophy text-gold me-2"></i> สินค้าขายดี 5 อันดับแรก
+            </h5>
+            <div class="list-group list-group-flush">
+                @if (!Model.TopProducts.Any())
+                {
+                    <div class="text-center py-4 text-muted">ยังไม่มีข้อมูลการขายสินค้า</div>
+                }
+                @{ int rank = 1; }
+                @foreach (var item in Model.TopProducts)
+                {
+                    <div class="list-group-item bg-transparent px-0 py-2 border-bottom d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <!-- แสดงเหรียญอันดับ -->
+                            @if (rank == 1)
+                            {
+                                <span class="badge bg-warning text-dark me-3 rounded-circle p-2" style="width: 32px; height: 32px;">🥇</span>
+                            }
+                            else if (rank == 2)
+                            {
+                                <span class="badge bg-secondary text-white me-3 rounded-circle p-2" style="width: 32px; height: 32px;">🥈</span>
+                            }
+                            else if (rank == 3)
+                            {
+                                <span class="badge bg-danger bg-opacity-75 text-white me-3 rounded-circle p-2" style="width: 32px; height: 32px;">🥉</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-light text-dark me-3 border fw-bold" style="width: 32px; height: 32px; line-height: 20px;">#@rank</span>
+                            }
+
+                            <img src="@item.ImageUrl" class="rounded me-3 shadow-sm" style="width: 45px; height: 45px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/45';" />
+                            <div>
+                                <div class="fw-bold text-dark small">@item.ProductName</div>
+                                <small class="text-muted">หมวดหมู่: @item.Category</small>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <div class="fw-bold text-gold small">ขายได้ @item.TotalSold ชิ้น</div>
+                            <small class="text-muted">฿@item.TotalSalesAmount.ToString("N2")</small>
+                        </div>
+                    </div>
+                    rank++;
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= 4. RECENT ORDERS (คำสั่งซื้อล่าสุด) ================= -->
+<div class="card card-luxury p-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold text-dark mb-0">
+            <i class="bi bi-clock-history text-gold me-2"></i> คำสั่งซื้อล่าสุด
+        </h5>
+        <a asp-controller="Order" asp-action="Index" class="btn btn-sm btn-outline-gold rounded-pill px-3">
+            ดูออเดอร์ทั้งหมด <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-luxury align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>เลขที่ออเดอร์</th>
+                    <th>วันที่สั่งซื้อ</th>
+                    <th>ชื่อลูกค้า</th>
+                    <th>ยอดรวม</th>
+                    <th>สถานะ</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model.RecentOrders)
+                {
+                    <tr>
+                        <td class="fw-bold text-gold">#@order.OrderNumber</td>
+                        <td class="small">@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td class="fw-medium">@order.CustomerName</td>
+                        <td class="fw-bold text-dark">฿@order.TotalAmount.ToString("N2")</td>
+                        <td>
+                            @if (order.Status == GlowBeauty_Shop.Seller.Models.OrderStatus.Paid)
+                            { <span class="badge bg-warning text-dark">ชำระเงินแล้ว</span> }
+                            else if (order.Status == GlowBeauty_Shop.Seller.Models.OrderStatus.Shipped)
+                            { <span class="badge bg-primary">อยู่ระหว่างจัดส่ง</span> }
+                            else if (order.Status == GlowBeauty_Shop.Seller.Models.OrderStatus.Delivered)
+                            { <span class="badge bg-success">จัดส่งสำเร็จ</span> }
+                            else
+                            { <span class="badge bg-secondary">@order.Status</span> }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- เรียกใช้ Script Chart.js สร้างกราฟสวยงาม -->
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+
+            const labels = @Json.Serialize(Model.ChartLabels);
+            const data = @Json.Serialize(Model.ChartData);
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'ยอดขาย (บาท)',
+                        data: data,
+                        borderColor: '#C5A059',
+                        backgroundColor: 'rgba(197, 160, 89, 0.15)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: '#D4AF37',
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#F0E6D8' },
+                            ticks: {
+                                callback: function(value) { return '฿' + value.toLocaleString(); }
+                            }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

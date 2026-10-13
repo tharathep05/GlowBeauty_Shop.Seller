@@ -1,0 +1,195 @@
+﻿@model IEnumerable<GlowBeauty_Shop.Seller.Models.Product>
+
+@{
+    ViewData["Title"] = "จัดการสินค้า";
+}
+
+<div class="card card-luxury p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-dark mb-1">
+                <i class="bi bi-grid-fill text-gold me-2"></i> จัดการรายการสินค้า
+            </h3>
+            <p class="text-muted small mb-0">รายการสินค้าทั้งหมดภายในร้าน GlowBeauty Shop</p>
+        </div>
+        <div class="d-flex gap-2">
+            <!-- ปุ่มกดเพิ่มสินค้า (แบบเปิด Modal) -->
+            <button type="button" class="btn btn-gold rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                <i class="bi bi-plus-lg me-1"></i> เพิ่มสินค้า (Modal)
+            </button>
+            <!-- ปุ่มกดเพิ่มสินค้า (แบบเปิดหน้าฟอร์มเต็ม) -->
+            <a asp-controller="Product" asp-action="Create" class="btn btn-outline-gold rounded-pill px-3">
+                <i class="bi bi-file-earmark-plus me-1"></i> เพิ่มสินค้า (หน้าฟอร์ม)
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- ตารางแสดงรายการสินค้า -->
+    <div class="table-responsive">
+        <table class="table table-luxury align-middle">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">รูปภาพ</th>
+                    <th>ชื่อสินค้า</th>
+                    <th>หมวดหมู่</th>
+                    <th>สภาพผิว</th>
+                    <th>ราคา</th>
+                    <th>สต็อก</th>
+                    <th>สถานะ</th>
+                    <th class="text-end">จัดการ</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="8" class="text-center py-5 text-muted">ยังไม่มีรายการสินค้าในระบบ</td>
+                    </tr>
+                }
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "/images/default-product.jpg" : item.ImageUrl)" 
+                                 class="rounded-3 shadow-sm" style="width: 55px; height: 55px; object-fit: cover;" 
+                                 onerror="this.src='https://via.placeholder.com/55';" />
+                        </td>
+                        <td>
+                            <div class="fw-bold text-dark">@item.Name</div>
+                            <small class="text-muted text-truncate d-inline-block" style="max-width: 200px;">@item.Description</small>
+                        </td>
+                        <td><span class="badge bg-gold-light text-dark border border-warning">@item.Category</span></td>
+                        <td class="small text-muted">@item.SkinType</td>
+                        <td class="fw-bold text-gold">฿@item.Price.ToString("N2")</td>
+                        <td>
+                            @if (item.StockQuantity > 10)
+                            {
+                                <span class="badge bg-success bg-opacity-10 text-success fw-bold">@item.StockQuantity ชิ้น</span>
+                            }
+                            else if (item.StockQuantity > 0)
+                            {
+                                <span class="badge bg-warning bg-opacity-10 text-dark fw-bold">@item.StockQuantity ชิ้น</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger bg-opacity-10 text-danger fw-bold">หมดสต็อก</span>
+                            }
+                        </td>
+                        <td>
+                            @if (item.IsActive)
+                            {
+                                <span class="badge bg-success">วางขาย</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">ซ่อนไว้</span>
+                            }
+                        </td>
+                        <td class="text-end">
+                            <!-- ปุ่มกดแก้ไขสินค้า -->
+                            <a asp-controller="Product" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-gold rounded-pill px-3 me-1" title="แก้ไขสินค้า">
+                                <i class="bi bi-pencil me-1"></i> แก้ไข
+                            </a>
+
+                            <!-- ปุ่มกดลบสินค้า -->
+                            <form asp-controller="Product" asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline" onsubmit="return confirm('คุณต้องการลบสินค้า @item.Name ใช่หรือไม่?');">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle px-2" title="ลบสินค้า">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- MODAL เพิ่มสินค้า -->
+<div class="modal fade" id="addProductModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-0 shadow-lg">
+            <form asp-controller="Product" asp-action="Create" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <div class="modal-header bg-gold-light border-bottom">
+                    <h5 class="modal-title fw-bold text-dark">
+                        <i class="bi bi-plus-circle text-gold me-2"></i> เพิ่มสินค้าใหม่เข้าร้าน
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label fw-bold text-muted small">ชื่อสินค้า <span class="text-danger">*</span></label>
+                            <input type="text" name="Name" class="form-control" placeholder="เช่น Glow Gentle Cleansing Foam" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-muted small">หมวดหมู่ <span class="text-danger">*</span></label>
+                            <select name="Category" class="form-select" required>
+                                <option value="">-- เลือกหมวดหมู่ --</option>
+                                <option value="Cleanser">Cleanser</option>
+                                <option value="Toner">Toner</option>
+                                <option value="Serum">Serum</option>
+                                <option value="Moisturizer">Moisturizer</option>
+                                <option value="Sunscreen">Sunscreen</option>
+                                <option value="Mask">Mask</option>
+                                <option value="Makeup">Makeup</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-muted small">ราคา (บาท) <span class="text-danger">*</span></label>
+                            <input type="number" step="0.01" name="Price" class="form-control" placeholder="0.00" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-muted small">สภาพผิวที่เหมาะ</label>
+                            <select name="SkinType" class="form-select">
+                                <option value="ทุกสภาพผิว">ทุกสภาพผิว</option>
+                                <option value="ผิวแพ้ง่าย">ผิวแพ้ง่าย</option>
+                                <option value="ผิวมัน">ผิวมัน</option>
+                                <option value="ผิวแห้ง">ผิวแห้ง</option>
+                                <option value="ผิวเป็นสิว">ผิวเป็นสิว</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-muted small">จำนวนสต็อก <span class="text-danger">*</span></label>
+                            <input type="number" name="StockQuantity" class="form-control" value="50" required />
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold text-muted small">รายละเอียดสินค้า</label>
+                            <textarea name="Description" class="form-control" rows="3" placeholder="อธิบายคุณสมบัติ จุดเด่น วิธีใช้ของสินค้า"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted small">อัปโหลดรูปภาพสินค้า</label>
+                            <input type="file" name="ImageFile" class="form-control" accept="image/*" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted small">หรือใส่ URL รูปภาพ</label>
+                            <input type="text" name="ImageUrl" class="form-control" placeholder="เช่น /images/serum1.jpg" />
+                        </div>
+                        <div class="col-md-12 mt-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="IsActive" value="true" checked id="isActiveSwitch">
+                                <label class="form-check-label fw-bold" for="isActiveSwitch">วางขายทันที</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="submit" class="btn btn-gold rounded-pill px-4 shadow-sm">
+                        <i class="bi bi-check-lg me-1"></i> บันทึกเพิ่มสินค้า
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,87 @@
+﻿@model IEnumerable<GlowBeauty_Shop.Seller.Models.Product>
+@{
+    ViewData["Title"] = "จัดการสินค้า";
+}
+
+<div class="my-3">
+    <!-- Header Zone -->
+    <div class="d-flex justify-content-between align-items-end mb-4 border-bottom pb-4" style="border-color: var(--lux-border) !important;">
+        <div>
+            <span class="text-uppercase" style="letter-spacing: 3px; color: var(--lux-gold); font-size: 0.8rem; font-weight: 500;">Inventory</span>
+            <h1 class="display-6 mb-0">รายการสินค้าทั้งหมด</h1>
+        </div>
+        <div>
+            <a asp-action="CreateProduct" class="btn btn-lux-gold">+ เพิ่มสินค้าใหม่</a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show border-0 bg-light text-dark rounded-0 mb-4" role="alert" style="border-left: 4px solid var(--lux-gold) !important;">
+            <strong>สำเร็จ!</strong> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Products Table -->
+    <div class="card-lux">
+        <div class="table-responsive">
+            <table class="table table-lux table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">รูปภาพ</th>
+                        <th>ชื่อสินค้า</th>
+                        <th>หมวดหมู่</th>
+                        <th>ราคา</th>
+                        <th>คงเหลือ</th>
+                        <th>สถานะ</th>
+                        <th class="text-end">จัดการ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                {
+                                    <img src="@item.ImageUrl" alt="@item.Name" style="width: 50px; height: 50px; object-fit: cover; border: 1px solid var(--lux-border);" />
+                                }
+                                else
+                                {
+                                    <div class="d-flex align-items-center justify-content-center bg-light text-muted" style="width: 50px; height: 50px; border: 1px solid var(--lux-border); font-size: 0.7rem;">
+                                        ไม่มีรูป
+                                    </div>
+                                }
+                            </td>
+                            <td><strong style="font-weight: 500;">@item.Name</strong></td>
+                            <td style="color: var(--lux-text-muted);">@item.Category</td>
+                            <td><strong class="lux-num">฿@item.Price.ToString("N2")</strong></td>
+                            <td>
+                                <span class="lux-num @(item.StockQuantity <= 10 ? "text-danger font-weight-bold" : "")">
+                                    @item.StockQuantity ชิ้น
+                                </span>
+                            </td>
+                            <td>
+                                @if (item.IsActive)
+                                {
+                                    <span class="badge-lux badge-lux-success">วางขาย</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-lux badge-lux-danger">ซ่อนสินค้า</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <a asp-action="EditProduct" asp-route-id="@item.Id" class="btn btn-sm btn-lux-outline me-1">แก้ไข</a>
+                                <form asp-action="DeleteProduct" asp-route-id="@item.Id" method="post" class="d-inline" onsubmit="return confirm('คุณต้องการลบสินค้าชิ้นนี้ใช่หรือไม่?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-0">ลบ</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
